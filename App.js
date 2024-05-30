@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function App() {
   const [name, setName] = useState()
   const [urlInput, setUrl] = useState("http://picsum.photos/300")
+  const [base64Img, setBase64Img] = useState();
   const imageURL = "http://picsum.photos/300";
 
   // Function to convert blob to Base64
@@ -24,13 +25,13 @@ export default function App() {
     try {
       await AsyncStorage.setItem('Myname', name); //Text
 
-      await AsyncStorage.setItem('MyImageUrl', urlInput); //Image
+      //await AsyncStorage.setItem('MyImageUrl', urlInput); //Image
 
       const response = await fetch(urlInput);
       const imageBlob = await response.blob();
       const base64Image = await convertBlobToBase64(imageBlob);
 
-      //await AsyncStorage.setItem('bImage', base64Image); //Image
+      await AsyncStorage.setItem('bImage', base64Image); //Image
 
       // To save an object we will have to use the stringify method
       /*let user = {
@@ -49,10 +50,21 @@ export default function App() {
     try {
       let savedName = await AsyncStorage.getItem('Myname');
       let savedImg = await AsyncStorage.getItem('MyImageUrl');
-      if ((savedName !== null) && (savedImg!==null)) {
+      let savedImg64 = await AsyncStorage.getItem('bImage');
+      /*
+      if ((savedName !== null) && (savedImg !== null) && savedImg64 != null) {
         setName(savedName);
         setUrl(savedImg);
+        setBase64Img(savedImg64);
+        console.log(savedImg64);
+      }*/
+      if (savedName !== null && savedImg !== null) {
+        setName(savedName);
+        setBase64Img(savedImg64);
+        //console.log(savedImg64);
       }
+
+
       // To load an object we need to do:
       /*
       let jsonValue = await AsyncStorage.getItem('Myname')
@@ -82,10 +94,14 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Image //TODO: this can be replaced by json file to extract image url
-        source={{ uri: urlInput }} // need to convert object in value 
+      <Image
+        source={{ uri: base64Img}}
         style={{ width: 300, height: 300 }}
       />
+      {/*<Image //TODO: this can be replaced by json file to extract image url
+        source={{ uri: urlInput }} // need to convert object in value 
+        style={{ width: 300, height: 300 }}
+      />*/}
 
       <Text style={{ height: 30 }}>{name}</Text>
       <Text style={styles.name}>What's your name?</Text>
